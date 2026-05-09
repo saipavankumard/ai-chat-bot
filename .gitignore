@@ -8,3 +8,12 @@ frontend/dist/
 # IDE and OS
 .DS_Store
 Thumbs.db
+
+.idea/
+.angular/
+node_modules/
+target/
+agent-transcripts/
+terminals/
+application.properties
+.env
