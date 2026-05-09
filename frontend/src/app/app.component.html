@@ -1,0 +1,27 @@
+<main class="page-shell">
+  <section class="hero">
+    <h1>Pavan's Q and A</h1>
+    <p>Ask any question and get a calm, clear AI-powered answer.</p>
+  </section>
+
+  <section class="search-card">
+    <div class="search-row">
+      <input
+        type="text"
+        [(ngModel)]="question"
+        (keyup.enter)="ask()"
+        placeholder="Ask your question..."
+        aria-label="Question input"
+      />
+      <button type="button" (click)="ask()" [disabled]="loading">
+        {{ loading ? 'Thinking...' : 'Ask' }}
+      </button>
+    </div>
+  </section>
+
+  <section class="response-card" *ngIf="loading || answer || errorMessage">
+    <div class="loading" *ngIf="loading">Gathering your answer...</div>
+    <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <article class="answer" *ngIf="answer" [innerHTML]="formattedAnswer"></article>
+  </section>
+</main>
