@@ -24,6 +24,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(new ErrorResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(PdfProcessingException.class)
+    public ResponseEntity<ErrorResponse> handlePdf(PdfProcessingException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(EmbeddingDimensionMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleEmbeddingDimension(EmbeddingDimensionMismatchException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(VectorStorageException.class)
+    public ResponseEntity<ErrorResponse> handleVectorStorage(VectorStorageException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(ex.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

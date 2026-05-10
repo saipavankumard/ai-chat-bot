@@ -1,27 +1,67 @@
 <main class="page-shell">
   <section class="hero">
     <h1>Pavan's Q and A</h1>
-    <p>Ask any question and get a calm, clear AI-powered answer.</p>
+    <p>
+      <strong>General chat</strong> uses OpenAI on your question alone.
+      <strong>Ask this PDF</strong> answers only from the PDF you attach.
+    </p>
   </section>
 
-  <section class="search-card">
+  <section class="search-card ask-panel general-ask-panel">
+    <h2 class="panel-title">General chat</h2>
+    <p class="panel-subtitle">Ask anything; the model responds without reading a document.</p>
     <div class="search-row">
       <input
         type="text"
-        [(ngModel)]="question"
-        (keyup.enter)="ask()"
-        placeholder="Ask your question..."
-        aria-label="Question input"
+        [(ngModel)]="generalQuestion"
+        (keyup.enter)="askGeneral()"
+        placeholder="Ask anything..."
+        aria-label="General question input"
       />
-      <button type="button" (click)="ask()" [disabled]="loading">
-        {{ loading ? 'Thinking...' : 'Ask' }}
+      <button type="button" (click)="askGeneral()" [disabled]="generalLoading">
+        {{ generalLoading ? 'Thinking...' : 'Ask' }}
       </button>
     </div>
   </section>
 
-  <section class="response-card" *ngIf="loading || answer || errorMessage">
-    <div class="loading" *ngIf="loading">Gathering your answer...</div>
-    <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
-    <article class="answer" *ngIf="answer" [innerHTML]="formattedAnswer"></article>
+  <section class="response-card" *ngIf="generalLoading || generalAnswer || generalErrorMessage">
+    <div class="loading" *ngIf="generalLoading">Gathering your answer...</div>
+    <div class="error" *ngIf="generalErrorMessage">{{ generalErrorMessage }}</div>
+    <article class="answer" *ngIf="generalAnswer" [innerHTML]="formattedGeneralAnswer"></article>
+  </section>
+
+  <section class="search-card ask-panel pdf-ask-panel">
+    <h2 class="panel-title">Ask this PDF</h2>
+    <p class="panel-subtitle">Choose a PDF, type your question, and get an answer grounded in that file.</p>
+    <div class="pdf-ask-row">
+      <label class="file-picker">
+        <span class="file-picker-label">Choose PDF</span>
+        <input
+          type="file"
+          accept=".pdf,application/pdf"
+          (change)="onRagPdfSelected($event)"
+          aria-label="Choose PDF for question answering"
+        />
+      </label>
+      <span class="selected-file" *ngIf="ragPdfFileName">{{ ragPdfFileName }}</span>
+    </div>
+    <div class="pdf-ask-question-row">
+      <input
+        type="text"
+        [(ngModel)]="pdfQuestion"
+        (keyup.enter)="askPdf()"
+        placeholder="Your question about this PDF..."
+        aria-label="PDF question input"
+      />
+      <button type="button" (click)="askPdf()" [disabled]="pdfRagLoading || !ragPdfFile">
+        {{ pdfRagLoading ? 'Reading PDF...' : 'Ask PDF' }}
+      </button>
+    </div>
+  </section>
+
+  <section class="response-card" *ngIf="pdfRagLoading || pdfRagAnswer || pdfRagErrorMessage">
+    <div class="loading" *ngIf="pdfRagLoading">Extracting text, finding relevant chunks, and generating an answer...</div>
+    <div class="error" *ngIf="pdfRagErrorMessage">{{ pdfRagErrorMessage }}</div>
+    <article class="answer" *ngIf="pdfRagAnswer" [innerHTML]="formattedPdfRagAnswer"></article>
   </section>
 </main>

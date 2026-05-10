@@ -19,12 +19,20 @@ export interface ErrorResponse {
   providedIn: 'root'
 })
 export class QaService {
-  private readonly askUrl = `${environment.apiBaseUrl}/api/ask`;
+  private readonly askDirectUrl = `${environment.apiBaseUrl}/api/ask/direct`;
+  private readonly askPdfUrl = `${environment.apiBaseUrl}/api/ask/pdf`;
 
   constructor(private readonly http: HttpClient) {}
 
-  askQuestion(question: string): Observable<AskResponse> {
+  askDirect(question: string): Observable<AskResponse> {
     const payload: AskRequest = { question };
-    return this.http.post<AskResponse>(this.askUrl, payload);
+    return this.http.post<AskResponse>(this.askDirectUrl, payload);
+  }
+
+  askPdfQuestion(file: File, question: string): Observable<AskResponse> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    form.append('question', question);
+    return this.http.post<AskResponse>(this.askPdfUrl, form);
   }
 }

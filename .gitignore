@@ -1,19 +1,20 @@
-# Backend
-backend/target/
-
-# Frontend
-frontend/node_modules/
-frontend/dist/
-
-# IDE and OS
-.DS_Store
-Thumbs.db
-
+# IntelliJ
 .idea/
+
+# Angular
 .angular/
 node_modules/
+
+# Java
 target/
-agent-transcripts/
-terminals/
-application.properties
+
+# Environment / secrets
 .env
+application.properties
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

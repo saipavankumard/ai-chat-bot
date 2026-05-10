@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,14 @@ public class OpenAiService {
     }
 
     public String ask(String question) {
+        return chat(List.of(Map.of("role", "user", "content", question)));
+    }
+
+    /**
+     * Sends a chat-completions request with the given messages (each map must include {@code role} and {@code content}).
+     */
+    @SuppressWarnings("unchecked")
+    public String chat(List<Map<String, String>> messages) {
         if (openAiProperties.getApiKey() == null || openAiProperties.getApiKey().isBlank()) {
             throw new OpenAiException("OpenAI API key is not configured on the server.");
         }
@@ -40,10 +49,9 @@ public class OpenAiService {
         headers.setBearerAuth(openAiProperties.getApiKey());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        Map<String, Object> requestBody = Map.of(
-                "model", openAiProperties.getModel(),
-                "messages", List.of(Map.of("role", "user", "content", question))
-        );
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", openAiProperties.getModel());
+        requestBody.put("messages", messages);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 

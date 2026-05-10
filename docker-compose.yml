@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: natureqa
+      POSTGRES_PASSWORD: natureqa
+      POSTGRES_DB: natureqa
+    ports:
+      - "5432:5432"
+    volumes:
+      - natureqa_pgdata:/var/lib/postgresql/data
+
+volumes:
+  natureqa_pgdata:

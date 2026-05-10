@@ -13,43 +13,112 @@ import { QaService, ErrorResponse } from './services/qa.service';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  question = '';
-  answer = '';
-  errorMessage = '';
-  loading = false;
+  generalQuestion = '';
+  generalAnswer = '';
+  generalErrorMessage = '';
+  generalLoading = false;
+
+  ragPdfFile: File | null = null;
+  ragPdfFileName = '';
+  pdfQuestion = '';
+  pdfRagAnswer = '';
+  pdfRagErrorMessage = '';
+  pdfRagLoading = false;
 
   constructor(
     private readonly qaService: QaService,
     private readonly sanitizer: DomSanitizer
   ) {}
 
-  ask(): void {
-    const trimmedQuestion = this.question.trim();
+  askGeneral(): void {
+    const trimmedQuestion = this.generalQuestion.trim();
     if (!trimmedQuestion) {
-      this.errorMessage = 'Please enter a question before asking.';
-      this.answer = '';
+      this.generalErrorMessage = 'Please enter a question before asking.';
+      this.generalAnswer = '';
       return;
     }
 
-    this.loading = true;
-    this.answer = '';
-    this.errorMessage = '';
+    this.generalLoading = true;
+    this.generalAnswer = '';
+    this.generalErrorMessage = '';
 
-    this.qaService.askQuestion(trimmedQuestion).subscribe({
+    this.qaService.askDirect(trimmedQuestion).subscribe({
       next: (response) => {
-        this.answer = response.answer;
-        this.loading = false;
+        this.generalAnswer = response.answer;
+        this.generalLoading = false;
       },
       error: (error: HttpErrorResponse) => {
         const backend = error.error as ErrorResponse | undefined;
-        this.errorMessage = backend?.message || 'Unable to get an answer right now. Please try again.';
-        this.loading = false;
+        this.generalErrorMessage =
+          backend?.message || 'Unable to get an answer right now. Please try again.';
+        this.generalLoading = false;
       }
     });
   }
 
-  get formattedAnswer(): SafeHtml {
-    const escaped = this.escapeHtml(this.answer);
+  onRagPdfSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    this.pdfRagAnswer = '';
+    this.pdfRagErrorMessage = '';
+
+    if (!file) {
+      this.ragPdfFile = null;
+      this.ragPdfFileName = '';
+      return;
+    }
+
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      this.pdfRagErrorMessage = 'Please choose a PDF file.';
+      this.ragPdfFile = null;
+      this.ragPdfFileName = '';
+      input.value = '';
+      return;
+    }
+
+    this.ragPdfFile = file;
+    this.ragPdfFileName = file.name;
+  }
+
+  askPdf(): void {
+    if (!this.ragPdfFile) {
+      this.pdfRagErrorMessage = 'Choose a PDF file first.';
+      return;
+    }
+    const q = this.pdfQuestion.trim();
+    if (!q) {
+      this.pdfRagErrorMessage = 'Enter your question about the PDF.';
+      return;
+    }
+
+    this.pdfRagLoading = true;
+    this.pdfRagAnswer = '';
+    this.pdfRagErrorMessage = '';
+
+    this.qaService.askPdfQuestion(this.ragPdfFile, q).subscribe({
+      next: (response) => {
+        this.pdfRagAnswer = response.answer;
+        this.pdfRagLoading = false;
+      },
+      error: (error: HttpErrorResponse) => {
+        const backend = error.error as ErrorResponse | undefined;
+        this.pdfRagErrorMessage =
+          backend?.message || 'Could not answer from this PDF. Please try again.';
+        this.pdfRagLoading = false;
+      }
+    });
+  }
+
+  get formattedGeneralAnswer(): SafeHtml {
+    return this.toFormattedHtml(this.generalAnswer);
+  }
+
+  get formattedPdfRagAnswer(): SafeHtml {
+    return this.toFormattedHtml(this.pdfRagAnswer);
+  }
+
+  private toFormattedHtml(answer: string): SafeHtml {
+    const escaped = this.escapeHtml(answer);
     const blocks = escaped.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
     const html = blocks.map((block) => this.renderBlock(block)).join('');
     return this.sanitizer.bypassSecurityTrustHtml(html);

@@ -10,6 +10,11 @@ public class OpenAiProperties {
     private String model;
     private String apiUrl;
     private int timeoutMillis;
+    private String embeddingApiUrl;
+    private String embeddingModel;
+    private int embeddingChunkSizeChars = 1000;
+    private int embeddingChunkOverlapChars = 150;
+    private int embeddingBatchSize = 64;
 
     public String getApiKey() {
         return apiKey;
@@ -41,5 +46,45 @@ public class OpenAiProperties {
 
     public void setTimeoutMillis(int timeoutMillis) {
         this.timeoutMillis = timeoutMillis;
+    }
+
+    public String getEmbeddingApiUrl() {
+        return embeddingApiUrl;
+    }
+
+    public void setEmbeddingApiUrl(String embeddingApiUrl) {
+        this.embeddingApiUrl = embeddingApiUrl;
+    }
+
+    public String getEmbeddingModel() {
+        return embeddingModel;
+    }
+
+    public void setEmbeddingModel(String embeddingModel) {
+        this.embeddingModel = embeddingModel;
+    }
+
+    public int getEmbeddingChunkSizeChars() {
+        return embeddingChunkSizeChars;
+    }
+
+    public void setEmbeddingChunkSizeChars(int embeddingChunkSizeChars) {
+        this.embeddingChunkSizeChars = embeddingChunkSizeChars;
+    }
+
+    public int getEmbeddingChunkOverlapChars() {
+        return embeddingChunkOverlapChars;
+    }
+
+    public void setEmbeddingChunkOverlapChars(int embeddingChunkOverlapChars) {
+        this.embeddingChunkOverlapChars = embeddingChunkOverlapChars;
+    }
+
+    public int getEmbeddingBatchSize() {
+        return embeddingBatchSize;
+    }
+
+    public void setEmbeddingBatchSize(int embeddingBatchSize) {
+        this.embeddingBatchSize = embeddingBatchSize;
     }
 }
